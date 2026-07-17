@@ -1,10 +1,9 @@
 import React, { Children } from "react";
 import HomeLayout from "./Layout/HomeLayout.jsx";
-import Navbar from "../src/Navbar.jsx";
+import Navbar from "./Navbar.jsx";
 import Register from "./Pages/PublicPages/Register.jsx";
-import LoginPage from "./Pages/PublicPages/Loginpage.jsx";
+import Loginpage from "./Pages/PublicPages/Loginpage.jsx";
 import Footer from "./Footer.jsx";
-import Contact from "./Pages/PublicPages/Contact.jsx";
 import About from "./Pages/PublicPages/About.jsx";
 import Homepage from "./Pages/PublicPages/Homepage.jsx";
 import {
@@ -13,14 +12,12 @@ import {
   RouterProvider,
   Routes,
 } from "react-router-dom";
-import Loginpage from "./Pages/PublicPages/Loginpage.jsx";
 import NotFound from "./Pages/NotFound.jsx";
 import Movies from "./Pages/PublicPages/Movies.jsx";
 import Genres from "./Pages/PublicPages/Genres.jsx";
 import MovieDetails from "./Pages/PublicPages/MovieDetails.jsx";
 
 const App = () => {
-  
   const route = createBrowserRouter([
     {
       path: "/",
@@ -39,10 +36,6 @@ const App = () => {
           element: <About />,
         },
         {
-          path: "/contact",
-          element: <Contact />,
-        },
-        {
           path: "/movies",
           element: <Movies />,
         },
@@ -53,6 +46,10 @@ const App = () => {
           path: "/movies/:id",
           element: <MovieDetails />,
         },
+        {
+          path: "/genres",
+          element: <Genres />,
+        },
       ],
     },
     {
@@ -62,10 +59,6 @@ const App = () => {
     {
       path: "/register",
       element: <Register />,
-    },
-    {
-      path: "/genres",
-      element: <Genres />,
     },
     {
       path: "/*",

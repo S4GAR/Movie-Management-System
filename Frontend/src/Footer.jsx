@@ -1,6 +1,5 @@
 import { FaInstagram, FaYoutube, FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import contact from "../src/Pages/PublicPages/Contact.jsx";
 import Home from "../src/Pages/PublicPages/Homepage.jsx";
 import About from "../src/Pages/PublicPages/About.jsx";
 import Movies from "../src/Pages/PublicPages/Movies.jsx";
