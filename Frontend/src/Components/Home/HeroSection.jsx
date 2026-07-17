@@ -1,22 +1,33 @@
-import { Play, Info, Star } from "lucide-react";
+import { Info, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import movie from "../../data/movie";
-// import featuredMovie from "../../data/featuredMovie";
+import { getFeaturedMovies } from "../../Utils/movieService";
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const featuredMovies = [
-    movie[0], // Interstellar
-    movie[1], // Inception
-    movie[2], // The Dark Knight
-    movie[4], // Avengers: Endgame
-  ];
 
+  const [featuredMovies, setFeaturedMovies] = useState([]);
   const [current, setCurrent] = useState(0);
-  const featuredMovie = featuredMovies[current];
+
   const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      const movies = await getFeaturedMovies();
+      setFeaturedMovies(movies);
+    };
+
+    loadMovies();
+  }, []);
+
+  useEffect(() => {
+    if (featuredMovies.length === 0) return;
+
+    startAutoSlide();
+
+    return () => clearInterval(intervalRef.current);
+  }, [featuredMovies]);
+
   const startAutoSlide = () => {
     clearInterval(intervalRef.current);
 
@@ -24,12 +35,6 @@ const HeroSection = () => {
       setCurrent((prev) => (prev + 1) % featuredMovies.length);
     }, 6000);
   };
-
-  useEffect(() => {
-    startAutoSlide();
-
-    return () => clearInterval(intervalRef.current);
-  }, []);
 
   const nextMovie = () => {
     setCurrent((prev) => (prev + 1) % featuredMovies.length);
@@ -41,43 +46,45 @@ const HeroSection = () => {
     startAutoSlide();
   };
 
+  if (featuredMovies.length === 0) {
+    return (
+      <section className="h-[80vh] flex items-center justify-center bg-[#192554] text-white">
+        Loading...
+      </section>
+    );
+  }
+
+  const featuredMovie = featuredMovies[current];
+
   return (
     <section className="relative h-[80vh] overflow-hidden">
       <button
         onClick={prevMovie}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 rounded-full bg-black/40 p-3 hover:bg-black/60 transition"
+        className="absolute left-6 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 p-3 transition hover:bg-black/60"
       >
         <ChevronLeft size={30} className="text-white" />
       </button>
 
       <button
         onClick={nextMovie}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 rounded-full bg-black/40 p-3 hover:bg-black/60 transition"
+        className="absolute right-6 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 p-3 transition hover:bg-black/60"
       >
         <ChevronRight size={30} className="text-white" />
       </button>
-      {/* Banner */}
-      <div
-        key={featuredMovie.id}
-        className="absolute inset-0 animate-fade"
-      ></div>
+
       <img
         src={featuredMovie.backdrop}
         alt={featuredMovie.title}
         className="absolute inset-0 h-full w-full object-cover"
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#192554] via-[#192554]/90 to-transparent" />
-
-      {/* Bottom Fade */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#192554] via-transparent to-transparent" />
 
       <div className="relative mx-auto flex h-full max-w-7xl items-center justify-between px-8">
-        {/* Left */}
         <div className="max-w-2xl text-white">
           <div className="mb-5 flex items-center gap-4">
-            <div className="flex items-center gap-1 rounded-full bg-yellow-500 px-3 py-1 text-black font-semibold">
+            <div className="flex items-center gap-1 rounded-full bg-yellow-500 px-3 py-1 font-semibold text-black">
               <Star size={16} fill="currentColor" />
               {featuredMovie.rating}
             </div>
@@ -93,7 +100,7 @@ const HeroSection = () => {
             {featuredMovie.title}
           </h1>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex gap-3 flex-wrap">
             {featuredMovie.genre.split(", ").map((genre) => (
               <span key={genre} className="rounded-full bg-[#232f6d] px-4 py-1">
                 {genre}
@@ -123,8 +130,6 @@ const HeroSection = () => {
             </button>
           </div>
         </div>
-
-        {/* Poster */}
 
         <div className="hidden lg:block">
           <img
