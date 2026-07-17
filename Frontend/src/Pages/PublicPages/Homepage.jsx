@@ -2,27 +2,38 @@ import React from "react";
 import { Star, Play, Film, Search, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "../../Components/Home/HeroSection";
-import movies from "../../data/movie";
+import { getFeaturedMovies } from "../../Utils/movieService";
+import { getGenres } from "../../Utils/movieService";
+import { useEffect, useState } from "react";
+// import movies from "../../data/movie";
 
 const Homepage = () => {
   const navigate = useNavigate();
-  const trendingMovies = [
-    movies[0],
-    movies[1],
-    movies[2],
-    movies[4],
-    movies[9],
-  ];
 
-  const genres = [
-    "Action",
-    "Sci-Fi",
-    "Drama",
-    "Thriller",
-    "Adventure",
-    "Fantasy",
-  ];
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
+  useEffect(() => {
+    const loadMovies = async () => {
+      const data = await getFeaturedMovies();
+      setTrendingMovies(data);
+    };
+
+    loadMovies();
+  }, []);
+
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const movies = await getFeaturedMovies();
+      const genres = await getGenres();
+
+      setTrendingMovies(movies);
+      setGenres(genres);
+    };
+
+    loadData();
+  }, []);
   return (
     <div>
       <HeroSection />
@@ -49,31 +60,9 @@ const Homepage = () => {
                   <img
                     src={movie.image}
                     alt={movie.title}
-                    className="
-                    h-72
-                    w-full
-                    object-cover
-                    transition
-                    group-hover:scale-105
-                    "
+                    className="h-72 w-full object-cover transition group-hover:scale-105"
                   />
-                  <div
-                    className="
-                    absolute
-                    bottom-3
-                    left-3
-                    flex
-                    items-center
-                    gap-1
-                    rounded-full
-                    bg-yellow-500
-                    px-2
-                    py-1
-                    text-sm
-                    font-bold
-                    text-black
-                  "
-                  >
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-1 text-sm font-bold text-black">
                     <Star size={14} fill="black" />
                     {movie.rating}
                   </div>
@@ -95,15 +84,7 @@ const Homepage = () => {
             {genres.map((genre) => (
               <button
                 key={genre}
-                className="
-                rounded-full
-                bg-[#232f6d]
-                px-6
-                py-3
-                transition
-                hover:bg-amber-500
-                hover:text-black
-                "
+                className="rounded-full bg-[#232f6d] px-6 py-3 transition hover:bg-amber-500 hover:text-black"
               >
                 {genre}
               </button>
@@ -111,36 +92,13 @@ const Homepage = () => {
           </div>
         </div>
         {/* CTA */}
-        <div
-          className="
-          mx-auto
-          mt-24
-          max-w-5xl
-          rounded-3xl
-          bg-gradient-to-r
-          from-[#232f6d]
-          to-[#101735]
-          p-10
-          text-center
-          "
-        >
+        <div className="mx-auto mt-24 max-w-5xl rounded-3xl bg-gradient-to-r from-[#232f6d] to-[#101735] p-10 text-center">
           <h2 className="text-4xl font-bold">Find Your Next Favorite Movie</h2>
           <p className="mx-auto mt-4 max-w-xl text-gray-400">
             Discover movies, rate your favorites, and share your thoughts with
             the HamroMovie community.
           </p>
-          <button
-            className="
-            mt-8
-            rounded-lg
-            bg-amber-500
-            px-8
-            py-4
-            font-semibold
-            text-black
-            hover:bg-amber-400
-            "
-          >
+          <button className="mt-8 rounded-lg bg-amber-500 px-8 py-4 font-semibold text-black hover:bg-amber-400">
             Explore Movies
           </button>
         </div>

@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import movies from "../../data/movie.js";
 import { Star } from "lucide-react";
-import ReviewSection from "../../components/ReviewSection";
-import Rating from "../../components/Rating";
-import ReviewFill from "../../Components/ReviewFill.jsx";
+import ReviewSection from "../../Components/Reviews/ReviewSection.jsx";
+import Rating from "../../Components/Reviews/Rating.jsx";
+import ReviewFill from "../../Components/Reviews/ReviewFill.jsx";
 import { useState, useEffect } from "react";
+import { getMovieById } from "../../Utils/movieService";
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -24,22 +24,42 @@ const MovieDetails = () => {
     }
   }, [id]);
 
-  const movie = movies.find((movie) => movie.id === Number(id));
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [reviews, setReviews] = useState(movie.reviews || []);
+  useEffect(() => {
+    const fetchMovie = async () => {
+      const data = await getMovieById(id);
+
+      setMovie(data);
+      setReviews(data?.reviews || []);
+      setLoading(false);
+    };
+
+    fetchMovie();
+  }, [id]);
+
+  const [reviews, setReviews] = useState([]);
 
   const [userRating, setUserRating] = useState(0);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  if (!movie) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b1120] text-white p-20">
-        Movie not found
+      <div className="min-h-screen flex items-center justify-center bg-[#0b1120] text-white">
+        Loading...
       </div>
     );
   }
 
+  if (!movie) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0b1120] text-white">
+        Movie not found
+      </div>
+    );
+  }
   const handleReviewSubmit = (comment) => {
     const newReview = {
       id: Date.now(),
@@ -120,7 +140,7 @@ const MovieDetails = () => {
         <Rating rating={userRating} setRating={setUserRating} />
 
         <ReviewFill
-          isLoggedIn={false}
+          isLoggedIn={isLoggedIn}
           rating={userRating}
           onSubmit={handleReviewSubmit}
         />
